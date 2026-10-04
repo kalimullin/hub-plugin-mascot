@@ -1,0 +1,20 @@
+/* маскот (main.js, спрайт — mascot-sprite.js): в шапке боковой панели справа; на старом хабе — в подвале; кадры — steps */
+.mascot { position: relative; line-height: 0; }
+.mascot.in-header { padding: 6px 10px 0 0; }   /* место под «?» и «z» сверху справа */
+.mascot.in-footer { display: flex; justify-content: flex-end; padding: 0 12px 4px; }
+.mascot .spr { position: relative; display: inline-block; line-height: 0; }
+.mascot svg { display: block; image-rendering: pixelated; }
+.mascot .f { display: block; }
+.mascot .f + .f { position: absolute; left: 0; top: 0; }
+.mascot .mt { position: absolute; font: 700 13px/1 "IBM Plex Mono", ui-monospace, Menlo, monospace; }
+.mascot .mt.bob { right: -10px; top: -45%; animation: mascot-bob 1s steps(2, end) infinite; }
+@keyframes mascot-bob { 50% { transform: translateY(-12%); } }
+.mascot .mt.drift { right: -10px; top: -20%; opacity: 0; animation: mascot-zz var(--d, 2.4s) steps(6, end) infinite; }
+.mascot .mt.drift.d2 { animation-delay: calc(var(--d, 2.4s) / 2); }
+@keyframes mascot-zz { 0% { opacity: 0; transform: translate(0, 0); } 15% { opacity: 1; } 85% { opacity: 1; } 100% { opacity: 0; transform: translate(40%, -120%); } }
+@media (prefers-reduced-motion: reduce) {
+  .mascot .f, .mascot .mt { animation: none !important; }
+  .mascot .f + .f { opacity: 0 !important; }
+  .mascot .mt, .mascot .mt.drift { opacity: 1; }
+  .mascot .mt.d2 { display: none; }
+}
