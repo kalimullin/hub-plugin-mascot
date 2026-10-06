@@ -1,5 +1,5 @@
 // Маскот — плагин страницы Agents Hub (EXTENDING.md, API 1.x): фиолетовое «облачко» с белыми глазами в шапке боковой
-// панели, симметрично аватару слева (32 px), показывает состояние флота: ждёт вас → работает → спит. Векторно (SVG):
+// панели, напротив аватара слева (37 px — в 1,15 раза больше, тот же отступ от края), показывает состояние флота: ждёт вас → работает → спит. Векторно (SVG):
 // тело — круги одной заливки (формы — shapes.js), анимации — CSS (mascot.css): работает — моргает и поглядывает,
 // ждёт вас — покачивается, спит — глаза закрыты, медленно дышит. Клик ничего не делает, подсказка — сводка по сессиям.
 // Место — `sidebar.header` (API 1.5); хаб старше — подвал боковой панели (`sidebar.footer`).
@@ -9,10 +9,13 @@ const SHAPE = "cloud";   // какая форма из shapes.js
 
 function svg(shape) {
   const { circles, eyes } = SHAPES[shape];
-  const body = circles.map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r}"/>`).join("");
+  // «живая» форма: каждый баббл дышит в своём ритме и сдвиге по фазе — силуэт мягко перетекает (mascot.css)
+  const body = circles.map(([x, y, r], i) => `<circle class="m-bub" cx="${x}" cy="${y}" r="${r}" style="` +
+    `animation-duration:${(5.2 + ((i * 1.37) % 2.6)).toFixed(2)}s;animation-delay:-${((i * 0.83) % 4).toFixed(2)}s;` +
+    `--dx:${(((i * 7) % 5) - 2) * 0.9}px;--dy:${(((i * 3) % 5) - 2) * 0.9}px"/>`).join("");
   const open = eyes.map(([x, y]) => `<ellipse class="m-eye" cx="${x}" cy="${y}" rx="5.8" ry="8.2"/>`).join("");
   const shut = eyes.map(([x, y]) => `<path class="m-shut" d="M${x - 6} ${y + 1} q6 5 12 0"/>`).join("");
-  return `<svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true"><g class="m-body">${body}</g>` +
+  return `<svg viewBox="0 0 100 100" width="37" height="37" aria-hidden="true"><g class="m-body">${body}</g>` +
     `<g class="m-eyes">${open}</g><g class="m-closed">${shut}</g></svg>`;
 }
 

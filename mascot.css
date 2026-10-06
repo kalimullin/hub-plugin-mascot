@@ -1,8 +1,14 @@
-/* маскот (main.js, формы — shapes.js): 32 px в шапке боковой панели, зеркально аватару слева; цвет — --mascot */
+/* маскот (main.js, формы — shapes.js): 37 px в шапке боковой панели, напротив аватара: тот же отступ от края, по центру
+   его высоты; цвет — --mascot */
 .mascot { --mascot: #8b55d9; display: inline-flex; line-height: 0; }
+.mascot.in-header { margin: -2.5px 0; }   /* 37 px по центру 32-пиксельного аватара */
 .mascot.in-footer { justify-content: flex-end; padding: 0 12px 6px; }
 .mascot svg { overflow: visible; }
 .mascot .m-body { fill: var(--mascot); transform-box: fill-box; transform-origin: 50% 100%; }
+/* живая форма: баббл мягко дышит и чуть смещается — у каждого свой ритм (длительность и фаза — в main.js) */
+.mascot .m-bub { transform-box: fill-box; transform-origin: center; animation: m-bubble 6s ease-in-out infinite; }
+@keyframes m-bubble { 0%, 100% { transform: translate(0, 0) scale(1); } 33% { transform: translate(var(--dx), var(--dy)) scale(1.08); }
+  66% { transform: translate(calc(var(--dx) * -0.6), calc(var(--dy) * -0.6)) scale(0.94); } }
 .mascot .m-eyes { transform-box: fill-box; transform-origin: center; }
 .mascot .m-eye { fill: #fff; transform-box: fill-box; transform-origin: center; }
 .mascot .m-shut { fill: none; stroke: #fff; stroke-width: 3.2; stroke-linecap: round; display: none; }
