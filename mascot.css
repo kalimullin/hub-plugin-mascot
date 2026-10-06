@@ -1,33 +1,9 @@
 /* маскот (main.js, формы — shapes.js): 37 px в шапке боковой панели, напротив аватара: тот же отступ от края, по центру
-   его высоты; цвет — --mascot */
-.mascot { --mascot: #8b55d9; display: inline-flex; line-height: 0; }
+   его высоты; цвет — --mascot. Анимация — в main.js (requestAnimationFrame), здесь только вид */
+.mascot { --mascot: #8b55d9; display: inline-flex; line-height: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .mascot.in-header { margin: -2.5px 0; }   /* 37 px по центру 32-пиксельного аватара */
 .mascot.in-footer { justify-content: flex-end; padding: 0 12px 6px; }
 .mascot svg { overflow: visible; }
-.mascot .m-body { fill: var(--mascot); transform-box: fill-box; transform-origin: 50% 100%; }
-/* живая форма: баббл мягко дышит и чуть смещается — у каждого свой ритм (длительность и фаза — в main.js) */
-.mascot .m-bub { transform-box: fill-box; transform-origin: center; animation: m-bubble 6s ease-in-out infinite; }
-@keyframes m-bubble { 0%, 100% { transform: translate(0, 0) scale(1); } 33% { transform: translate(var(--dx), var(--dy)) scale(1.08); }
-  66% { transform: translate(calc(var(--dx) * -0.6), calc(var(--dy) * -0.6)) scale(0.94); } }
-.mascot .m-eyes { transform-box: fill-box; transform-origin: center; }
-.mascot .m-eye { fill: #fff; transform-box: fill-box; transform-origin: center; }
-.mascot .m-shut { fill: none; stroke: #fff; stroke-width: 3.2; stroke-linecap: round; display: none; }
-.mascot svg { transform-origin: 50% 100%; }
-
-/* работает — моргает и поглядывает */
-.mascot[data-state="work"] .m-eye { animation: m-blink 3.2s infinite; }
-.mascot[data-state="work"] .m-eyes { animation: m-glance 4.8s ease-in-out infinite; }
-@keyframes m-blink { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(0.12); } }
-@keyframes m-glance { 0%, 30% { transform: translateX(0); } 40%, 55% { transform: translateX(3px); } 65%, 80% { transform: translateX(-3px); } 90%, 100% { transform: translateX(0); } }
-
-/* ждёт вас — покачивается */
-.mascot[data-state="wait"] svg { animation: m-bob 0.9s ease-in-out infinite alternate; }
-@keyframes m-bob { from { transform: translateY(0) rotate(-4deg); } to { transform: translateY(-3px) rotate(4deg); } }
-
-/* спит — глаза закрыты, медленно дышит */
-.mascot[data-state="sleep"] .m-eyes { display: none; }
-.mascot[data-state="sleep"] .m-shut { display: inline; }
-.mascot[data-state="sleep"] .m-body { animation: m-breathe 3.6s ease-in-out infinite; }
-@keyframes m-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.04, 0.97); } }
-
-@media (prefers-reduced-motion: reduce) { .mascot * , .mascot svg { animation: none !important; } }
+.mascot .m-body { fill: var(--mascot); }
+.mascot .m-eye { fill: #fff; }
+.mascot .m-shut { fill: none; stroke: #fff; stroke-width: 3.2; stroke-linecap: round; }
