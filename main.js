@@ -1,22 +1,22 @@
-// Маскот — плагин страницы Agents Hub (EXTENDING.md, API 1.x): фиолетовое «облачко» с белыми глазами в шапке боковой
-// панели, напротив аватара слева (37 px — в 1,15 раза больше, тот же отступ от края), показывает состояние флота:
-// ждёт вас → работает → спит. Векторно (SVG): тело — круги одной заливки (формы — shapes.js).
+// Mascot — an Agents Hub page plugin (EXTENDING.md, API 1.x): a purple "cloud" with white eyes in the sidebar header,
+// opposite the avatar on the left (37 px — 1.15 times bigger, the same offset from the edge), shows the state of the
+// fleet: waiting for you → working → asleep. Vector (SVG): the body is circles of one fill (shapes in shapes.js).
 //
-// Анимацию ведёт свой цикл requestAnimationFrame от общего времени, а не CSS: страница на каждом снимке ядра заново
-// вставляет элемент места, и CSS-анимации начинались бы сначала — рывки (владелец 06.10: «дерганные анимации»). Меняются
-// только атрибуты transform у SVG — без пересчёта раскладки. Живость: бабблы дышат каждый в своём ритме; глаза моргают
-// через случайные промежутки (иногда дважды), смотрят за курсором или оглядываются сами; выражение — по состоянию
-// (работает — прищур, «читает»; ждёт вас — глаза шире, смотрит на вас и покачивается; спит — глаза закрыты, дышит);
-// клик — прыжок со сжатием и растяжением и довольные глаза «^ ^». «Уменьшить движение» — статично, без прыжка.
-// Место — `sidebar.header` (API 1.5); хаб старше — подвал боковой панели (`sidebar.footer`).
+// The animation is driven by its own requestAnimationFrame loop from a shared clock, not by CSS: the page re-inserts the
+// place's element on every core snapshot, and CSS animations would restart each time — jerky motion. Only the SVG
+// transform attributes change — no layout recalculation. Liveliness: each bubble breathes at its own rhythm; the eyes
+// blink at random intervals (sometimes twice), follow the cursor or look around by themselves; the expression follows
+// the state (working — squinting, "reading"; waiting for you — eyes wider, looks at you and sways; asleep — eyes closed,
+// breathing); a click — a jump with squash and stretch and happy "^ ^" eyes. "Reduce motion" — static, no jump.
+// Place — `sidebar.header` (API 1.5); an older hub — the sidebar footer (`sidebar.footer`).
 import { SHAPES } from "./shapes.js";
 
-const SHAPE = "cloud";   // какая форма из shapes.js
+const SHAPE = "cloud";   // which shape from shapes.js
 const NS = "http://www.w3.org/2000/svg";
 const TAU = Math.PI * 2;
 const calm = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
 const rnd = (a, b) => a + Math.random() * (b - a);
-const smooth = (x) => x * x * (3 - 2 * x);           // 0..1 → 0..1 без рывка на краях
+const smooth = (x) => x * x * (3 - 2 * x);           // 0..1 → 0..1 without a jerk at the ends
 const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
 
 function node(tag, attrs, parent) {
@@ -26,8 +26,8 @@ function node(tag, attrs, parent) {
   return n;
 }
 
-// «ждёт вас» — вопрос формой (карточка в pending), запрос инструмента, догадка сторожа, запрос разрешения посреди хода;
-// упавшая сессия — тоже «ждёт вас»: что-то требует внимания
+// "waiting for you" — a question as a form (a card in pending), a tool request, the watchdog's guess, a permission
+// request in the middle of a turn; a crashed session is "waiting for you" too: something needs attention
 const needsOwner = (s) => (s.requests || []).filter((r) => r.state === "needs-owner");
 const waits = (s) => (s.pending || []).length || needsOwner(s).length || s.attention || s.state === "dialog" || s.state === "failed";
 const works = (s) => ["busy", "starting"].includes(s.state);
@@ -44,15 +44,15 @@ class Mascot {
     this.state = "sleep";
     const { circles, eyes } = SHAPES[SHAPE];
     this.svg = node("svg", { viewBox: "0 0 100 100", width: 37, height: 37, "aria-hidden": "true" });
-    this.whole = node("g", {}, this.svg);                        // прыжок, покачивание — всё тело с глазами
+    this.whole = node("g", {}, this.svg);                        // jump, sway — the whole body with the eyes
     const body = node("g", { class: "m-body" }, this.whole);
     this.bubs = circles.map(([x, y, r], i) => ({ x, y, el: node("circle", { cx: x, cy: y, r }, body),
       f1: 0.11 + ((i * 0.037) % 0.07), f2: 0.23 + ((i * 0.053) % 0.09), p1: i * 1.7, p2: i * 2.9 }));
     this.eyes = eyes.map(([x, y]) => {
       const g = node("g", {}, this.whole);
       const open = node("ellipse", { class: "m-eye", cx: 0, cy: 0, rx: 5.8, ry: 8.2 }, g);
-      const shut = node("path", { class: "m-shut", d: "M-6 1 q6 5 12 0" }, g);      // спит: дуги вниз
-      const happy = node("path", { class: "m-shut", d: "M-6 3 q6 -8 12 0" }, g);    // после клика: «^ ^»
+      const shut = node("path", { class: "m-shut", d: "M-6 1 q6 5 12 0" }, g);      // asleep: arcs down
+      const happy = node("path", { class: "m-shut", d: "M-6 3 q6 -8 12 0" }, g);    // after a click: "^ ^"
       return { x, y, g, open, shut, happy };
     });
     this.gaze = [0, 0]; this.look = [0, 0]; this.nextLook = 0;
@@ -71,14 +71,14 @@ class Mascot {
     const dt = Math.min(0.05, t - this.last); this.last = t;
     const still = calm(), st = this.state;
 
-    // бабблы: две медленные синусоиды на каждый — силуэт перетекает, без повторяющегося рисунка
+    // bubbles: two slow sine waves each — the silhouette flows, with no repeating pattern
     for (const b of this.bubs) {
       const s = still ? 1 : 1 + 0.055 * Math.sin(TAU * b.f1 * t + b.p1) + 0.025 * Math.sin(TAU * b.f2 * t + b.p2);
       const dx = still ? 0 : 1.1 * Math.sin(TAU * b.f2 * t + b.p1), dy = still ? 0 : 1.1 * Math.cos(TAU * b.f1 * t + b.p2);
       b.el.setAttribute("transform", `translate(${(b.x + dx).toFixed(2)} ${(b.y + dy).toFixed(2)}) scale(${s.toFixed(4)}) translate(${-b.x} ${-b.y})`);
     }
 
-    // тело: ждёт — покачивается; спит — дышит; работает — едва заметно; клик — прыжок со сжатием и растяжением
+    // body: waiting — sways; asleep — breathes; working — barely moves; a click — a jump with squash and stretch
     let y = 0, rot = 0, sx = 1, sy = 1;
     if (!still) {
       if (st === "wait") { y = -2.2 * (0.5 - 0.5 * Math.cos(TAU * 0.9 * t)); rot = 5 * Math.sin(TAU * 0.45 * t); }
@@ -88,7 +88,7 @@ class Mascot {
         const p = (t - this.jumpT) / 0.9;
         if (p >= 1) this.jumpT = -1;
         else {
-          // сжатие 0–0.12 → прыжок с растяжением 0.12–0.5 → приземление со сжатием 0.5–0.62 → затухающая пружина
+          // squash 0–0.12 → jump with stretch 0.12–0.5 → landing with squash 0.5–0.62 → a damped spring
           const sq = (a, b) => smooth(clamp((p - a) / (b - a), 0, 1));
           const jump = p > 0.12 && p < 0.5 ? Math.sin(Math.PI * (p - 0.12) / 0.38) : 0;
           y += -16 * jump;
@@ -103,7 +103,7 @@ class Mascot {
     this.whole.setAttribute("transform",
       `translate(50 100) translate(0 ${y.toFixed(2)}) rotate(${rot.toFixed(2)}) scale(${sx.toFixed(4)} ${sy.toFixed(4)}) translate(-50 -100)`);
 
-    // взгляд: за курсором, если он двигался недавно; иначе — оглядывается сам; работает — чаще «читает» вниз
+    // gaze: follows the cursor if it moved recently; otherwise looks around by itself; working — more often "reads" down
     if (!still) {
       const m = this.mouse;
       if (m && t - m[2] < 2.5 && st !== "sleep") {
@@ -117,11 +117,11 @@ class Mascot {
           : reading ? [rnd(-0.7, 0.3), rnd(0.4, 0.8)] : [rnd(-1, 1), rnd(-0.6, 0.5)];
         this.nextLook = t + (st === "wait" ? rnd(0.8, 2.2) : rnd(1.4, 4));
       }
-      const k = 1 - Math.exp(-dt * 9);                 // мягко догоняет цель, без рывка
+      const k = 1 - Math.exp(-dt * 9);                 // eases toward the target, without a jerk
       this.gaze = [this.gaze[0] + (this.look[0] - this.gaze[0]) * k, this.gaze[1] + (this.look[1] - this.gaze[1]) * k];
     }
 
-    // моргание: случайные промежутки, иногда дважды подряд; веки — плавная дуга
+    // blinking: random intervals, sometimes twice in a row; the lids follow a smooth arc
     let lid = 1;
     if (!still && st !== "sleep") {
       if (this.blinkT < 0 && t >= this.blinkAt) { this.blinkT = t; this.double = Math.random() < 0.22; }
@@ -132,7 +132,7 @@ class Mascot {
         else { this.blinkT = -1; this.blinkAt = t + (st === "wait" ? rnd(1.2, 3.5) : rnd(2, 6.5)); }
       }
     }
-    // выражение по состоянию: работает — прищур; ждёт вас — шире
+    // expression by state: working — squinting; waiting for you — wider
     const shape = st === "wait" ? [1.1, 1.12] : st === "work" ? [1, 0.82] : [1, 1];
     const happy = this.jumpT >= 0 && !still;
     for (const e of this.eyes) {
@@ -153,6 +153,11 @@ const newer = (api, want) => {
 };
 
 export default function register(hub) {
+  const RU = hub.lang === "ru";   // the page language (API 1.25); English when it is missing
+  const summary = (work, wait, sleep) => RU
+    ? `Работают ${work} · ждут вас ${wait} · спят ${sleep}`
+    : `Working ${work} · waiting for you ${wait} · asleep ${sleep}`;
+  const label = (text) => (RU ? `Состояние сессий: ${text}` : `Session state: ${text}`);
   hub.addStyle("mascot.css");
   const slot = newer(hub.api, "1.5") ? "sidebar.header" : "sidebar.footer";
   hub.addSlot(slot, {
@@ -160,11 +165,11 @@ export default function register(hub) {
     render(root, snap) {
       root.classList.add("mascot", slot === "sidebar.header" ? "in-header" : "in-footer");
       root.setAttribute("role", "img");
-      root.mascot ||= new Mascot(root);     // один раз: root живёт между снимками, цикл анимации — свой
+      root.mascot ||= new Mascot(root);     // once: root lives between snapshots, the animation loop is its own
       const all = snap?.sessions || [];
       const nWait = all.filter(waits).length, nWork = all.filter((s) => works(s) && !waits(s)).length;
-      root.title = `Работают ${nWork} · ждут вас ${nWait} · спят ${all.length - nWork - nWait}`;
-      root.setAttribute("aria-label", `Состояние сессий: ${root.title}`);
+      root.title = summary(nWork, nWait, all.length - nWork - nWait);
+      root.setAttribute("aria-label", label(root.title));
       root.mascot.state = fleetState(all);
     },
   });

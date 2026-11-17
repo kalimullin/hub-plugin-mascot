@@ -1,8 +1,8 @@
 {
   "name": "mascot",
   "icon": "icon.svg",
-  "description": "Фиолетовое облачко с глазами в шапке боковой панели показывает состояние флота: ждёт вас, работает, спит",
-  "why": "Видно, нужен ли вы флоту, не читая список сессий",
+  "description": "A purple cloud with eyes in the header of the sidebar shows the state of the fleet: waiting for you, working, asleep",
+  "why": "You see whether the fleet needs you without reading the session list",
   "version": "2.2.0",
   "hub": "^1.0",
   "web": "main.js"

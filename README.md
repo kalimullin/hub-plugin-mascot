@@ -1,21 +1,24 @@
-# Маскот — плагин Agents Hub
+# Mascot — an Agents Hub plugin
 
-Фиолетовое «облачко» с глазами в шапке боковой панели (строка «Хаб сессий», справа, зеркально аватару — 32 px) показывает состояние всего флота одним взглядом:
+A purple "cloud" with eyes in the sidebar header (the hub row, at the right edge, mirroring the avatar — 32 px) shows the
+state of the whole fleet at a glance:
 
-- **ждёт вас** — у какой-то сессии вопрос, запрос инструмента или она упала: покачивается;
-- **работает** — хоть одна сессия занята ходом: моргает и поглядывает по сторонам;
-- **спит** — все свободны или спят: глаза закрыты, медленно дышит.
+- **waiting for you** — a session has a question, a tool request, or has crashed: it sways;
+- **working** — at least one session is busy with a turn: it blinks and glances around;
+- **asleep** — all sessions are free or asleep: eyes closed, it breathes slowly.
 
-Подсказка при наведении — сводка («Работают 1 · ждут вас 1 · спят 2»). Клик ничего не делает. При «уменьшить движение»
-стоит первый кадр.
+The tooltip on hover is a summary ("Working 1 · waiting for you 1 · asleep 2"). A click does nothing. With "reduce
+motion" it stays on the first frame.
 
-Место — `sidebar.header` (API плагинов 1.5). На хабе с API ниже 1.5 маскот садится в подвал боковой панели.
+The UI text is in English by default and in Russian for a hub whose language is Russian (`hub.lang`).
 
-## Поставить
+Place — `sidebar.header` (Plugin API 1.5). On a hub with an API below 1.5 the mascot sits in the sidebar footer.
 
-«Настройки» → «Плагины» → найти «mascot» или вставить ссылку на этот репо → «Проверить и поставить».
+## Install
 
-## Свой персонаж
+"Settings" → "Plugins" → find "mascot" or paste the link to this repo → "Check and install".
 
-Векторный: формы — `shapes.js` (тело — круги одной заливки, центры глаз; три готовые: `cloud`, `flower`, `fuzzy`), выбор
-формы — `SHAPE` в `main.js`, цвет — `--mascot` в `mascot.css`.
+## Your own character
+
+Vector: the shapes are in `shapes.js` (the body is circles of one fill, plus the eye centers; three ready ones: `cloud`,
+`flower`, `fuzzy`), the shape is chosen by `SHAPE` in `main.js`, the color by `--mascot` in `mascot.css`.
